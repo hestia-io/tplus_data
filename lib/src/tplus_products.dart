@@ -11,6 +11,7 @@ class TPlusProducts {
 
   final Logger _logger = Logger('TPlusProducts');
 
+  ///
   Future<ProductListResponse> list(
     String part, {
     String pageToken,
@@ -89,6 +90,16 @@ class TPlusProducts {
 
       if (part.contains('contentDetails')) {
         product.contentDetails = ProductContentDetails();
+
+        final taxIndex = fields.indexOf('TaxRate_Name');
+        if (taxIndex > -1) {
+          var rate = item[taxIndex] ?? '0';
+          if (rate.isEmpty) rate = '0';
+          product.contentDetails.taxes.add(ProductTax()
+            ..rate = double.parse(rate)
+            ..country = 'CN');
+        }
+
         ['priuserdefnvc', 'priuserdefdecm', 'pubuserdefnvc', 'pubuserdefdecm']
             .forEach((name) {
           List.generate(6, (e) => e).forEach((e) {

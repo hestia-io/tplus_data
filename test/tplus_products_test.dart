@@ -29,6 +29,7 @@ void main() {
                   ['Code', 'System.String'],
                   ['Name', 'System.String'],
                   ['Specification', 'System.String'],
+                  ['TaxRate_Name', 'System.String'],
                   ['ValueType_Name', 'System.String'],
                   ['InventoryClass_Name', 'System.String'],
                   ['ProductInfo_Name', 'System.String'],
@@ -55,6 +56,7 @@ void main() {
                     '0002',
                     'testTitle0',
                     '',
+                    '13.6',
                     '全月平均',
                     '',
                     null,
@@ -80,6 +82,7 @@ void main() {
                     '001',
                     'testTitle1',
                     '',
+                    '17',
                     '全月平均',
                     '',
                     null,
@@ -104,6 +107,7 @@ void main() {
                   [
                     '1',
                     'testTitle2',
+                    '',
                     '',
                     '全月平均',
                     '',
@@ -140,6 +144,8 @@ void main() {
 
     expect(response.items[0].id, '2');
     expect(response.items[0].snippet.title, 'testTitle0');
+    expect(response.items[0].contentDetails.taxes.first.rate, 13.6);
+    expect(response.items[0].contentDetails.taxes.first.country, 'CN');
     expect(response.items[0].contentDetails.customAttributes[0].name,
         'priuserdefnvc1');
     expect(response.items[0].contentDetails.customAttributes[0].value,
@@ -159,6 +165,8 @@ void main() {
 
     expect(response.items[1].id, '3');
     expect(response.items[1].snippet.title, 'testTitle1');
+    expect(response.items[1].contentDetails.taxes.first.rate, 17.0);
+    expect(response.items[1].contentDetails.taxes.first.country, 'CN');
     expect(response.items[1].contentDetails.customAttributes[0].name,
         'priuserdefnvc1');
     expect(response.items[1].contentDetails.customAttributes[0].value, '');
@@ -177,6 +185,8 @@ void main() {
 
     expect(response.items[2].id, '4');
     expect(response.items[2].snippet.title, 'testTitle2');
+    expect(response.items[2].contentDetails.taxes.first.rate, 0.0);
+    expect(response.items[2].contentDetails.taxes.first.country, 'CN');
     expect(response.items[2].contentDetails.customAttributes[0].name,
         'priuserdefnvc1');
     expect(response.items[2].contentDetails.customAttributes[0].value, '');
