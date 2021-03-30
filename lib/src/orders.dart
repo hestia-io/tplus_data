@@ -10,6 +10,10 @@ class Orders {
 
   final Logger _logger = Logger('TPlusOrders');
 
+  static String updateUrl =
+      '/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
+      'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Save';
+
   ///
   Future<Order> update(String part, Order order) async {
     if (order.status.orderStatus == OrderOrderStatus.canceled ||
@@ -18,9 +22,7 @@ class Orders {
       return order;
     }
 
-    final url = Uri.parse(
-        '${helper.url}/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
-        'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Save');
+    final url = Uri.parse('${helper.url}$updateUrl');
 
     var note = '';
     order.contentDetails.customAttributes.forEach((e) {
