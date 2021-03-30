@@ -1,8 +1,8 @@
 import 'package:logging/logging.dart';
+import 'package:uniform_data/page_token.dart';
 import 'package:uniform_data/uniform_data.dart';
 
 import 'requester.dart';
-import 'utils.dart';
 
 class Warehouses {
   Warehouses({this.helper});
@@ -16,7 +16,7 @@ class Warehouses {
     String pageToken,
     int maxResults = 30,
   }) async {
-    final pageIndex = decodePageToken(pageToken, 0);
+    final pageIndex = IndexPageToken.decode(pageToken, 0);
     final pageSize = maxResults ?? 30;
 
     final url = Uri.parse(
@@ -120,11 +120,11 @@ class Warehouses {
     final totalPage = page['TotalPageNum'];
 
     if (currentPage > 0) {
-      response.prevPageToken = encodePageToken(pageIndex - 1);
+      response.prevPageToken = IndexPageToken.encode(pageIndex - 1);
     }
 
     if (currentPage < totalPage - 1) {
-      response.nextPageToken = encodePageToken(pageIndex + 1);
+      response.nextPageToken = IndexPageToken.encode(pageIndex + 1);
     }
 
     return response;
