@@ -1,18 +1,17 @@
 import 'package:logging/logging.dart';
 import 'package:uniform_data/uniform_data.dart';
 
-import 'tplus_helper.dart';
+import 'requester.dart';
 import 'utils.dart';
 
-class TPlusProducts {
-  TPlusProducts({this.helper});
+class Warehouses {
+  Warehouses({this.helper});
 
-  final TPlusHelper helper;
+  final Requester helper;
 
   final Logger _logger = Logger('TPlusProducts');
 
-  ///
-  Future<ProductListResponse> list(
+  Future<WarehouseListResponse> list(
     String part, {
     String pageToken,
     int maxResults = 30,
@@ -21,11 +20,11 @@ class TPlusProducts {
     final pageSize = maxResults ?? 30;
 
     final url = Uri.parse(
-        '${helper.url}/tplus/ajaxpro/Ufida.T.AA.UIP.BaseInfo.InventoryList,'
-        'Ufida.T.AA.UIP.ashx?method=ExecuteAjaxAction&args.action=__tree_click__');
+        '${helper.url}/tplus/ajaxpro/Ufida.T.AA.UIP.WarehouseList,'
+        'Ufida.T.AA.UIP.ashx?method=ExecuteAjaxAction&args.action=PageIndex');
 
     final params = {
-      'action': '__tree_click__',
+      'action': 'PageIndex',
       'data': {
         '__type': '',
         'keys': [
@@ -40,31 +39,33 @@ class TPlusProducts {
           'pId',
           'SourceType',
           'TaskSessionID',
-          'HideMasker',
           'searchStyle',
           'MutexState',
-          'InventoryClassId',
           'PageIndex',
-          'PageSize'
+          'PageSize',
+          'ColumnSetName',
+          'SearchStyle',
+          'SearchName'
         ],
         'values': [
           'aa',
-          'aa1022',
-          '/tplus/BAPView/BaseInfoList.aspx?sysId=aa&mId=aa1022&pId=baseInfoList&SourceType=FromMenu&taskID=%E5%AD%98%E8%B4%A7&TaskSessionID=13de7a1b-699f-a0b5-96ba-8753faacfade&HideMasker=true',
+          'aa1023',
+          '/tplus/BAPView/BaseInfoList.aspx?sysId=aa&mId=aa1023&pId=baseInfoList&SourceType=FromMenu&taskID=%E4%BB%93%E5%BA%93&TaskSessionID=4740a530-e508-b0d3-8196-bdae9f0bd5bf',
           'baseInfoListView',
           'undefined',
-          '%E5%AD%98%E8%B4%A7',
+          '%E4%BB%93%E5%BA%93',
           'aa',
-          'aa1022',
+          'aa1023',
           'baseInfoList',
           'FromMenu',
-          '13de7a1b-699f-a0b5-96ba-8753faacfade',
-          'true',
+          '4740a530-e508-b0d3-8196-bdae9f0bd5bf',
           '',
           '',
-          'root',
           pageIndex,
-          pageSize
+          pageSize,
+          'WarehouseDTO',
+          '',
+          ''
         ]
       }
     };
@@ -78,28 +79,18 @@ class TPlusProducts {
     final idIndex = fields.indexOf('ID');
     final nameIndex = fields.indexOf('Name');
 
-    final products = table[1].map<Product>((item) {
-      final product = Product()
-        ..kind = 'tplus#product'
+    final warehouses = table[1].map<Warehouse>((item) {
+      final warehouse = Warehouse()
+        ..kind = 'tplus#warehouse'
         ..id = item[idIndex].toString();
 
       if (part.contains('snippet')) {
-        product.snippet =
-            (ProductSnippet()..title = item[nameIndex].toString());
+        warehouse.snippet =
+            (WarehouseSnippet()..title = item[nameIndex].toString());
       }
 
       if (part.contains('contentDetails')) {
-        product.contentDetails = ProductContentDetails();
-
-        final taxIndex = fields.indexOf('TaxRate_Name');
-        if (taxIndex > -1) {
-          var rate = item[taxIndex] ?? '0';
-          if (rate.isEmpty) rate = '0';
-          product.contentDetails.taxes.add(ProductTax()
-            ..rate = double.parse(rate)
-            ..country = 'CN');
-        }
-
+        warehouse.contentDetails = WarehouseContentDetails();
         ['priuserdefnvc', 'priuserdefdecm', 'pubuserdefnvc', 'pubuserdefdecm']
             .forEach((name) {
           List.generate(6, (e) => e).forEach((e) {
@@ -108,22 +99,22 @@ class TPlusProducts {
             final customAttribute = CustomAttribute()
               ..name = key
               ..value = index < 0 ? '' : (item[index] ?? '').toString();
-            product.contentDetails.customAttributes.add(customAttribute);
+            warehouse.contentDetails.customAttributes.add(customAttribute);
           });
         });
       }
 
-      return product;
+      return warehouse;
     }).toList();
 
     final page = data['PagePara'];
 
-    final response = ProductListResponse()
-      ..kind = 'tplus#productListResponse'
+    final response = WarehouseListResponse()
+      ..kind = 'tplus#warehouseListResponse'
       ..pageInfo = (PageInfo()
         ..totalResults = page['TotalCount']
         ..resultsPerPage = maxResults)
-      ..items.addAll(products);
+      ..items.addAll(warehouses);
 
     final currentPage = page['CurrentPageNum'];
     final totalPage = page['TotalPageNum'];

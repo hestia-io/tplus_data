@@ -1,9 +1,11 @@
 import 'package:http/http.dart';
 
-import 'tplus_helper.dart';
-import 'tplus_products.dart';
-import 'tplus_warehouses.dart';
-import 'tplus_vendors.dart';
+import 'customers.dart';
+import 'orders.dart';
+import 'products.dart';
+import 'requester.dart';
+import 'vendors.dart';
+import 'warehouses.dart';
 
 class TPlus {
   TPlus({
@@ -14,7 +16,7 @@ class TPlus {
   }) {
     _client = Client();
 
-    final helper = TPlusHelper(
+    final helper = Requester(
       url: url,
       userName: userName,
       password: password,
@@ -22,24 +24,34 @@ class TPlus {
       client: _client,
     );
 
-    _products = TPlusProducts(helper: helper);
-    _warehouses = TPlusWarehouses(helper: helper);
-    _vendors = TPlusVendors(helper: helper);
+    _products = Products(helper: helper);
+    _warehouses = Warehouses(helper: helper);
+    _vendors = Vendors(helper: helper);
+    _orders = Orders(helper: helper);
+    _customers = Customers(helper: helper);
   }
 
   Client _client;
 
-  TPlusProducts _products;
+  Products _products;
 
-  TPlusProducts get products => _products;
+  Products get products => _products;
 
-  TPlusWarehouses _warehouses;
+  Warehouses _warehouses;
 
-  TPlusWarehouses get warehouses => _warehouses;
+  Warehouses get warehouses => _warehouses;
 
-  TPlusVendors _vendors;
+  Vendors _vendors;
 
-  TPlusVendors get vendors => _vendors;
+  Vendors get vendors => _vendors;
+
+  Orders _orders;
+
+  Orders get orders => _orders;
+
+  Customers _customers;
+
+  Customers get customers => _customers;
 
   Future<void> dispose() async {
     _client.close();

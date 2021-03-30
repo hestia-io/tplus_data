@@ -4,8 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-class TPlusHelper {
-  TPlusHelper({
+class Requester {
+  Requester({
     this.url,
     this.client,
     this.userName,
@@ -71,17 +71,18 @@ class TPlusHelper {
       _inited = true;
     }
 
-    _logger.info('request $url');
+    final body = jsonEncode(params);
+    _logger.info('request $url', body);
 
-    final response = await client.post(url,
-        headers: {'cookie': _cookie}, body: jsonEncode(params));
+    final response =
+        await client.post(url, headers: {'cookie': _cookie}, body: body);
 
     _logger.info('response', response.body);
 
-    final body = _flattenClass(
+    final results = _flattenClass(
         _flattenClass(_flattenClass(_flattenClass(response.body))));
 
-    return jsonDecode(body);
+    return jsonDecode(results);
   }
 
   String _flattenClass(String str) {

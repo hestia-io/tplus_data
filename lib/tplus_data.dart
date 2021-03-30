@@ -1,4 +1,6 @@
 library tplus_data;
 
-export 'src/tplus_helper.dart';
+export 'package:uniform_data/uniform_data.dart';
+
+export 'src/requester.dart';
 export 'src/tplus.dart';

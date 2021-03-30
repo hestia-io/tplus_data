@@ -1,16 +1,15 @@
-import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
+import 'package:tplus_data/src/requester.dart';
+import 'package:tplus_data/src/warehouses.dart';
 
-import 'package:tplus_data/src/tplus_helper.dart';
-import 'package:tplus_data/src/tplus_warehouses.dart';
-
-class MockTPlusHelper extends Mock implements TPlusHelper {}
+class MockTPlusHelper extends Mock implements Requester {}
 
 void main() {
   var warehouses;
 
   setUp(() {
-    warehouses = TPlusWarehouses(helper: MockTPlusHelper());
+    warehouses = Warehouses(helper: MockTPlusHelper());
   });
 
   test('list()', () async {

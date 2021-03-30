@@ -1,13 +1,13 @@
 import 'package:logging/logging.dart';
 import 'package:uniform_data/uniform_data.dart';
 
-import 'tplus_helper.dart';
+import 'requester.dart';
 import 'utils.dart';
 
-class TPlusVendors {
-  TPlusVendors({this.helper});
+class Vendors {
+  Vendors({this.helper});
 
-  final TPlusHelper helper;
+  final Requester helper;
 
   final Logger _logger = Logger('TPlusVendors');
 

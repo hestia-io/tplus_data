@@ -1,19 +1,18 @@
 import 'dart:convert';
 
-import 'package:test/test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:http/http.dart';
 import 'package:crypto/crypto.dart';
-
+import 'package:http/http.dart';
+import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 import 'package:tplus_data/tplus_data.dart';
 
 class MockClient extends Mock implements Client {}
 
 void main() {
-  TPlusHelper helper;
+  Requester helper;
 
   setUp(() {
-    helper = TPlusHelper(
+    helper = Requester(
       url: 'testUrl',
       client: MockClient(),
       userName: 'testUserName',
