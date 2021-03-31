@@ -214,6 +214,76 @@ class Orders {
       throw Error();
     }
 
+    final id = results['value']['Data']['ID'].toString();
+    final ts = results['value']['Data']['Ts'].toString();
+
+    await _auditOrder(id, ts);
+
     return order;
+  }
+
+  Future<void> _auditOrder(String id, String ts) async {
+    final url = Uri.parse(
+        '${helper.url}/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
+        'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Audit');
+
+    final params = {
+      'action': 'Audit',
+      'data': {
+        '__type': '',
+        'keys': [
+          'SysId',
+          'BizCode',
+          'RawUrl',
+          'ViewType',
+          'TView',
+          'taskID',
+          'mId',
+          'sysId',
+          'pId',
+          'SourceType',
+          'TaskSessionID',
+          'voucherStateControl',
+          'UpdateWholeTree',
+          'MutexState',
+          'DetailNames',
+          'ID',
+          'Ts',
+          'TaskManager',
+          'isAuditProcess',
+          'operation',
+          'editState'
+        ],
+        'values': [
+          'ST',
+          'ST1021',
+          '/tplus/BAPView/Voucher.aspx?mId=ST1021&sysId=ST&pId=voucherView&SourceType=FromMenu&taskID=%E9%94%80%E5%94%AE%E5%87%BA%E5%BA%93%E5%8D%95&TaskSessionID=23d6f687-eeb1-a7bc-50b1-61d6abff37ed',
+          'voucherView',
+          'undefined',
+          '%E9%94%80%E5%94%AE%E5%87%BA%E5%BA%93%E5%8D%95',
+          'ST1021',
+          'ST',
+          'voucherView',
+          'FromMenu',
+          '23d6f687-eeb1-a7bc-50b1-61d6abff37ed',
+          'Edit',
+          'False',
+          '02',
+          '',
+          int.parse(id),
+          ts,
+          'StockEffectValidateTask,StockControlTask',
+          'True',
+          'Audit',
+          'Edit'
+        ]
+      }
+    };
+
+    final results = await helper.fetch(url, params);
+
+    if (results['value'] == null || results['value']['Data'] == null) {
+      throw Error();
+    }
   }
 }
