@@ -48,7 +48,9 @@ void main() {
       ..status = (OrderStatus()..orderStatus = OrderOrderStatus.shipped);
 
     when(requester.fetch(any, any)).thenAnswer((_) async => {
-          'value': {'Data': {}}
+          'value': {
+            'Data': {'ID': '100', 'Ts': '2111111'}
+          }
         });
 
     await orders.update('', order);
