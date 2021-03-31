@@ -90,7 +90,7 @@ void main() {
                     0,
                     null,
                     null,
-                    null,
+                    '',
                     [2021, 2, 26, 0, 0, 0, 0],
                     null,
                     null,
@@ -161,6 +161,8 @@ void main() {
     expect(response.items[0].contentDetails.customAttributes[4].name,
         'priuserdefnvc5');
     expect(response.items[0].contentDetails.customAttributes[4].value, '');
+    expect(response.items[0].snippet.costOfGoodsSold.value, '656');
+    expect(response.items[0].snippet.costOfGoodsSold.currency, 'RMB');
 
     expect(response.items[1].id, '3');
     expect(response.items[1].snippet.title, 'testTitle1');
@@ -181,6 +183,7 @@ void main() {
     expect(response.items[1].contentDetails.customAttributes[4].name,
         'priuserdefnvc5');
     expect(response.items[1].contentDetails.customAttributes[4].value, '');
+    expect(response.items[1].snippet.hasCostOfGoodsSold(), false);
 
     expect(response.items[2].id, '4');
     expect(response.items[2].snippet.title, 'testTitle2');
@@ -201,6 +204,7 @@ void main() {
     expect(response.items[2].contentDetails.customAttributes[4].name,
         'priuserdefnvc5');
     expect(response.items[2].contentDetails.customAttributes[4].value, '');
+    expect(response.items[2].snippet.hasCostOfGoodsSold(), false);
 
     expect(response.pageInfo.totalResults, 3);
     expect(response.pageInfo.resultsPerPage, 30);

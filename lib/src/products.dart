@@ -86,6 +86,16 @@ class Products {
       if (part.contains('snippet')) {
         product.snippet =
             (ProductSnippet()..title = item[nameIndex].toString());
+
+        final costIndex = fields.indexOf('LatestCost');
+        if (costIndex > -1) {
+          final costValue = item[costIndex];
+          if (costValue is int || costValue is double) {
+            product.snippet.costOfGoodsSold = (Price()
+              ..currency = 'RMB'
+              ..value = costValue.toString());
+          }
+        }
       }
 
       if (part.contains('contentDetails')) {

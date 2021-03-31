@@ -4,7 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:tplus_data/tplus_data.dart';
+import 'package:tplus_data/src/requester.dart';
 
 class MockClient extends Mock implements Client {}
 
