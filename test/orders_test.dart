@@ -1,35 +1,59 @@
-import 'package:logging/logging.dart';
+import 'package:test/test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:uniform_data/uniform_data.dart';
 
-import 'requester.dart';
+import 'package:tplus_data/src/orders.dart';
+import 'package:tplus_data/src/requester.dart';
 
-class Orders {
-  Orders({this.helper});
+class MockRequester extends Mock implements Requester {}
 
-  final Requester helper;
+void main() {
+  var orders;
+  var requester;
 
-  final Logger _logger = Logger('TPlusOrders');
+  setUp(() {
+    requester = MockRequester();
+    orders = Orders(helper: requester);
+  });
 
-  static String updateUrl =
-      '/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
-      'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Save';
+  test('update()', () async {
+    final testCustomerId = '100';
+    final testWarehouseId = '200';
+    final testNote = 'testNote';
 
-  ///
-  Future<Order> update(String part, Order order) async {
-    if (order.status.orderStatus == OrderOrderStatus.canceled ||
-        order.status.orderStatus == OrderOrderStatus.inProgress ||
-        order.status.orderStatus == OrderOrderStatus.pendingShipment) {
-      return order;
-    }
+    final lineItems = <OrderLineItem>[
+      OrderLineItem()
+        ..product = (OrderLineItemProduct()
+          ..id = '110'
+          ..price = (Price()
+            ..currency = 'RMB'
+            ..value = '124')
+          ..costOfGoodsSold = (Price()
+            ..currency = 'RMB'
+            ..value = '120')
+          ..taxRate = 13)
+        ..quantityShipped = 123
+        ..shippingDetails =
+            (OrderLineItemShippingDetails()..warehouseId = testWarehouseId)
+    ];
 
-    final url = Uri.parse('${helper.url}$updateUrl');
+    final order = Order()
+      ..snippet = (OrderSnippet()
+        ..customerId = testCustomerId
+        ..lineItems.addAll(lineItems))
+      ..contentDetails = (OrderContentDetails()
+        ..customAttributes.add(CustomAttribute()
+          ..name = 'outboundDeliveryNote'
+          ..value = testNote))
+      ..status = (OrderStatus()..orderStatus = OrderOrderStatus.shipped);
 
-    var note = '';
-    order.contentDetails.customAttributes.forEach((e) {
-      if (e.name == 'outboundDeliveryNote') {
-        note = e.value;
-      }
-    });
+    when(requester.fetch(any, any)).thenAnswer((_) async => {
+          'value': {'Data': {}}
+        });
+
+    await orders.update('', order);
+
+    final url = Uri.parse('${requester.url}${Orders.updateUrl}');
 
     final params = {
       'action': 'Save',
@@ -91,13 +115,11 @@ class Orders {
               'Code': '', // 'IO-2021-03-0001',
               'IdBusiType': 65,
               'IdRdStyle': 17,
-              'IdPartner': order.snippet.customerId ?? '',
-              'IdSettleCustomer': order.snippet.customerId ?? '',
+              'IdPartner': testCustomerId,
+              'IdSettleCustomer': testCustomerId,
               'Mobilephone': '',
               'Address': '',
-              'IdWarehouse':
-                  order.snippet.lineItems.first.shippingDetails.warehouseId ??
-                      '', // '3',
+              'IdWarehouse': testWarehouseId, // '3',
               'IdCurrency': 4,
               'ExchangeRate': '1',
               'IdCollaborateUpVoucherType': '',
@@ -116,7 +138,7 @@ class Orders {
               'RdDirectionFlag': false,
               'IsAutoGenerate': false,
               'BeforeUpgrade': '',
-              'Memo': note,
+              'Memo': testNote,
               'Maker': '',
               'Reviser': '',
               'Auditor': '',
@@ -157,9 +179,8 @@ class Orders {
                   'PromotionVoucherIds',
                   'LastModifiedField'
                 ],
-                'rows': order.snippet.lineItems
-                    .where((e) => e.quantityShipped > 0)
-                    .map((item) {
+                'rows':
+                    lineItems.where((e) => e.quantityShipped > 0).map((item) {
                   return [
                     1, // Status
                     '${order.snippet.lineItems.indexOf(item) + 1}', // Code
@@ -208,12 +229,10 @@ class Orders {
       }
     };
 
-    final results = await helper.fetch(url, params);
+    verify(requester.fetch(url, params)).called(1);
 
-    if (results['value'] == null || results['value']['Data'] == null) {
-      throw Error();
-    }
+    when(requester.fetch(any, any)).thenAnswer((_) async => {});
 
-    return order;
-  }
+    expect(() async => await orders.update('', order), throwsA(isA<Error>()));
+  });
 }
