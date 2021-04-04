@@ -89,7 +89,10 @@ class Orders {
               'VoucherDate':
                   DateTime.now().toString().split(' ').first, // '2021-03-29',
               'Code': '', // 'IO-2021-03-0001',
-              'IdBusiType': 65,
+              'IdBusiType':
+                  order.status.orderStatus == OrderOrderStatus.returned
+                      ? 66
+                      : 65,
               'IdRdStyle': 17,
               'IdPartner': order.snippet.customerId ?? '',
               'IdSettleCustomer': order.snippet.customerId ?? '',
@@ -158,7 +161,7 @@ class Orders {
                   'LastModifiedField'
                 ],
                 'rows': order.snippet.lineItems
-                    .where((e) => e.quantityShipped > 0)
+                    //.where((e) => e.quantityShipped > 0)
                     .map((item) {
                   return [
                     1, // Status
