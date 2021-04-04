@@ -6,6 +6,9 @@ import 'products.dart';
 import 'requester.dart';
 import 'vendors.dart';
 import 'warehouses.dart';
+import 'warehouse_entries.dart';
+
+export 'warehouse_entries.dart';
 
 class TPlus {
   TPlus({
@@ -29,6 +32,7 @@ class TPlus {
     _vendors = Vendors(helper: helper);
     _orders = Orders(helper: helper);
     _customers = Customers(helper: helper);
+    _warehouseEntries = WarehouseEntries(requester: helper);
   }
 
   Client _client;
@@ -52,6 +56,10 @@ class TPlus {
   Customers _customers;
 
   Customers get customers => _customers;
+
+  WarehouseEntries _warehouseEntries;
+
+  WarehouseEntries get warehouseEntries => _warehouseEntries;
 
   Future<void> dispose() async {
     _client.close();

@@ -4,6 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
+final Logger _logger = Logger('tplus.requester');
+
 class Requester {
   Requester({
     this.url,
@@ -26,8 +28,6 @@ class Requester {
   String _cookie;
 
   bool _inited = false;
-
-  final Logger _logger = Logger('TPlusHelper');
 
   String get cookie => _cookie;
 
@@ -52,8 +52,6 @@ class Requester {
 
     final cookie = response.headers['set-cookie'] ?? '';
 
-    _logger.info(cookie);
-
     if (cookie.isEmpty) {
       _logger.severe('sign in failure');
       throw Error();
@@ -61,7 +59,7 @@ class Requester {
 
     _cookie = cookie;
 
-    _logger.info('sign in success');
+    _logger.fine('sign in success');
   }
 
   ///
@@ -72,23 +70,29 @@ class Requester {
     }
 
     final body = jsonEncode(params);
-    _logger.info('request $url', body);
+    _logger.fine('request $url', body);
 
     final response =
         await client.post(url, headers: {'cookie': _cookie}, body: body);
 
-    _logger.info('response', response.body);
+    _logger.fine('response', response.body);
 
-    final results = _flattenClass(
-        _flattenClass(_flattenClass(_flattenClass(response.body))));
+    final results = _flattenClass(response.body);
 
     return jsonDecode(results);
   }
 
   String _flattenClass(String str) {
-    return str.replaceAllMapped(RegExp(r'new[^\(\)]*\(([^\(\)]*)\)'),
-        (Match m) {
+    return str.replaceAllMapped(RegExp(r'new Date\(([^\(\)]*)\)'), (Match m) {
+      return '[' + m.group(1) + ']';
+    }).replaceAllMapped(RegExp(r'new Ajax\.Web\.DataTable\((.*)\)'), (Match m) {
       return '[' + m.group(1) + ']';
     });
+
+    /*
+    return str.replaceAllMapped(RegExp(r'new[^\(\)]*\((.*)\),'), (Match m) {
+      return '[' + m.group(1) + '],';
+    });
+    */
   }
 }

@@ -37,7 +37,7 @@ void main() {
             headers: anyNamed('headers'), body: anyNamed('body')))
         .thenAnswer((_) async => Response(
             '{"result":"ok","Data": '
-            'new Ajax.Web.DataTable("key", 100, new Date(2012, "22"),'
+            'new Ajax.Web.DataTable("(key)", 100, new Date(2012, "22"),'
             'new Date("22", "10")),"count":10}',
             200));
 
@@ -60,7 +60,7 @@ void main() {
         }))).called(1);
 
     expect(results['result'], 'ok');
-    expect(results['Data'][0], 'key');
+    expect(results['Data'][0], '(key)');
     expect(results['Data'][3][0], '22');
 
     verify(helper.client.post(testUrl,

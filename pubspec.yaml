@@ -10,7 +10,9 @@ dependencies:
   http: ^0.13.1
   logging: ^1.0.1
   crypto: ^3.0.0
-  uniform_data: ^0.1.0
+  uniform_data: ^0.1.1
+    #uniform_data: 
+    #path: ../uniform_data 
 
 dev_dependencies:
   pedantic: ^1.9.0
