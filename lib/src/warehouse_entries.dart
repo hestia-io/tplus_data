@@ -74,9 +74,14 @@ class WarehouseEntryItem {
 }
 
 class WarehouseEntries {
-  WarehouseEntries({this.requester});
+  WarehouseEntries({
+    this.requester,
+    this.auditRequester,
+  });
 
   final Requester requester;
+
+  final Requester auditRequester;
 
   static String insertUrl =
       '/tplus/ajaxpro/Ufida.T.ST.UIP.NewPurchaseReceiveVoucherEdit'
@@ -346,7 +351,7 @@ class WarehouseEntries {
       }
     };
 
-    final response = await requester.fetch(url, params);
+    final response = await auditRequester.fetch(url, params);
 
     if (response['value'] == null || response['value']['Data'] == null) {
       throw Error();

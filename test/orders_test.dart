@@ -10,10 +10,12 @@ class MockRequester extends Mock implements Requester {}
 void main() {
   var orders;
   var requester;
+  var auditRequester;
 
   setUp(() {
     requester = MockRequester();
-    orders = Orders(helper: requester);
+    auditRequester = MockRequester();
+    orders = Orders(helper: requester, auditRequester: auditRequester);
   });
 
   test('update()', () async {
@@ -47,15 +49,21 @@ void main() {
           ..value = testNote))
       ..status = (OrderStatus()..orderStatus = OrderOrderStatus.shipped);
 
-    when(requester.fetch(any, any)).thenAnswer((_) async => {
+    final url = Uri.parse('${requester.url}${Orders.updateUrl}');
+
+    when(requester.fetch(url, any)).thenAnswer((_) async => {
           'value': {
             'Data': {'ID': '100', 'Ts': '2111111'}
           }
         });
 
-    await orders.update('', order);
+    final auditUrl = Uri.parse('${auditRequester.url}${Orders.auditUrl}');
 
-    final url = Uri.parse('${requester.url}${Orders.updateUrl}');
+    when(auditRequester.fetch(auditUrl, any)).thenAnswer((_) async => {
+          'value': {'Data': {}}
+        });
+
+    await orders.update('', order);
 
     final params = {
       'action': 'Save',
@@ -232,6 +240,61 @@ void main() {
     };
 
     verify(requester.fetch(url, params)).called(1);
+
+    final auditParams = {
+      'action': 'Audit',
+      'data': {
+        '__type': '',
+        'keys': [
+          'SysId',
+          'BizCode',
+          'RawUrl',
+          'ViewType',
+          'TView',
+          'taskID',
+          'mId',
+          'sysId',
+          'pId',
+          'SourceType',
+          'TaskSessionID',
+          'voucherStateControl',
+          'UpdateWholeTree',
+          'MutexState',
+          'DetailNames',
+          'ID',
+          'Ts',
+          'TaskManager',
+          'isAuditProcess',
+          'operation',
+          'editState'
+        ],
+        'values': [
+          'ST',
+          'ST1021',
+          '/tplus/BAPView/Voucher.aspx?mId=ST1021&sysId=ST&pId=voucherView&SourceType=FromMenu&taskID=%E9%94%80%E5%94%AE%E5%87%BA%E5%BA%93%E5%8D%95&TaskSessionID=23d6f687-eeb1-a7bc-50b1-61d6abff37ed',
+          'voucherView',
+          'undefined',
+          '%E9%94%80%E5%94%AE%E5%87%BA%E5%BA%93%E5%8D%95',
+          'ST1021',
+          'ST',
+          'voucherView',
+          'FromMenu',
+          '23d6f687-eeb1-a7bc-50b1-61d6abff37ed',
+          'Edit',
+          'False',
+          '02',
+          '',
+          100,
+          '2111111',
+          'StockEffectValidateTask,StockControlTask',
+          'True',
+          'Audit',
+          'Edit'
+        ]
+      }
+    };
+
+    verify(auditRequester.fetch(auditUrl, auditParams)).called(1);
 
     when(requester.fetch(any, any)).thenAnswer((_) async => {});
 

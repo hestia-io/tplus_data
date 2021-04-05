@@ -4,15 +4,24 @@ import 'package:uniform_data/uniform_data.dart';
 import 'requester.dart';
 
 class Orders {
-  Orders({this.helper});
+  Orders({
+    this.helper,
+    this.auditRequester,
+  });
 
   final Requester helper;
+
+  final Requester auditRequester;
 
   final Logger _logger = Logger('TPlusOrders');
 
   static String updateUrl =
       '/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
       'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Save';
+
+  static String auditUrl =
+      '/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
+      'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Audit';
 
   ///
   Future<Order> update(String part, Order order) async {
@@ -226,9 +235,7 @@ class Orders {
   }
 
   Future<void> _auditOrder(String id, String ts) async {
-    final url = Uri.parse(
-        '${helper.url}/tplus/ajaxpro/Ufida.T.ST.UIP.NewSaleDispatchVoucherEdit,'
-        'Ufida.T.ST.UIP.ashx?method=ExecuteAjaxAction&args.action=Audit');
+    final url = Uri.parse('${helper.url}$auditUrl');
 
     final params = {
       'action': 'Audit',
@@ -283,7 +290,7 @@ class Orders {
       }
     };
 
-    final results = await helper.fetch(url, params);
+    final results = await auditRequester.fetch(url, params);
 
     if (results['value'] == null || results['value']['Data'] == null) {
       throw Error();

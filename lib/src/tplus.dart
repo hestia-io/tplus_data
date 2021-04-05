@@ -16,6 +16,8 @@ class TPlus {
     String userName,
     String password,
     String accountNumber,
+    String auditUserName,
+    String auditPassword,
   }) {
     _client = Client();
 
@@ -27,12 +29,23 @@ class TPlus {
       client: _client,
     );
 
+    final auditRequester = (auditUserName != null && auditPassword != null)
+        ? Requester(
+            url: url,
+            userName: auditUserName,
+            password: auditPassword,
+            accountNumber: accountNumber,
+            client: _client,
+          )
+        : helper;
+
     _products = Products(helper: helper);
     _warehouses = Warehouses(helper: helper);
     _vendors = Vendors(helper: helper);
-    _orders = Orders(helper: helper);
+    _orders = Orders(helper: helper, auditRequester: auditRequester);
     _customers = Customers(helper: helper);
-    _warehouseEntries = WarehouseEntries(requester: helper);
+    _warehouseEntries =
+        WarehouseEntries(requester: helper, auditRequester: auditRequester);
   }
 
   Client _client;
