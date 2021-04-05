@@ -1,4 +1,9 @@
+import 'package:logging/logging.dart';
+import 'package:decimal/decimal.dart';
+
 import 'requester.dart';
+
+final _logger = Logger('tplus.warehouseEntries');
 
 class WarehouseEntry {
   WarehouseEntry({
@@ -27,6 +32,17 @@ class WarehouseEntry {
   final String note;
 
   final List<WarehouseEntryItem> items;
+
+  Map toJson() => {
+        if (date != null) 'date': date,
+        if (type != null) 'type': type,
+        if (vendorId != null) 'vendorId': vendorId,
+        if (warehouseId != null) 'warehouseId': warehouseId,
+        if (clerkId != null) 'clerkId': clerkId,
+        if (sourceId != null) 'sourceId': sourceId,
+        if (note != null) 'note': note,
+        if (items != null) 'items': items.map((e) => e.toJson()).toList(),
+      };
 }
 
 class WarehouseEntryItem {
@@ -47,6 +63,14 @@ class WarehouseEntryItem {
   final int quantity;
 
   final double taxRate;
+
+  Map toJson() => {
+        if (productId != null) 'productId': productId,
+        if (warehouseId != null) 'warehouseId': warehouseId,
+        if (price != null) 'price': price,
+        if (quantity != null) 'quantity': quantity,
+        if (taxRate != null) 'taxRate': taxRate,
+      };
 }
 
 class WarehouseEntries {
@@ -64,6 +88,8 @@ class WarehouseEntries {
 
   Future<WarehouseEntry> insert(WarehouseEntry entry) async {
     final url = Uri.parse('${requester.url}$insertUrl');
+
+    _logger.fine(entry.toJson());
 
     final params = {
       'action': 'Save',
@@ -200,9 +226,10 @@ class WarehouseEntries {
                 ],
                 'rows': entry.items.map((item) {
                   final productId = item.productId;
-                  final quantity = item.quantity;
-                  final price = item.price;
-                  final taxRate = item.taxRate;
+                  final quantity = Decimal.parse(item.quantity.toString());
+                  final price = Decimal.parse(item.price.toString());
+                  final taxRate = Decimal.parse(item.taxRate.toString());
+                  final one = Decimal.parse('1');
 
                   return [
                     1, // 'Status',
@@ -219,14 +246,14 @@ class WarehouseEntries {
                     '', // 'ExistingCompositionQuantity',
                     '$quantity个', // 'CompositionQuantity',
                     '$taxRate', // 'TaxRate',
-                    '${price * (1 + taxRate)}', //'259.74', // 'OrigTaxPrice',
+                    '${price * (one + taxRate)}', //'259.74', // 'OrigTaxPrice',
                     '${price * taxRate * quantity}', //'37702.26', // 'OrigTax',
-                    '${price * (1 + taxRate) * quantity}', //'259480.26', // 'OrigTaxAmount',
+                    '${price * (one + taxRate) * quantity}', //'259480.26', // 'OrigTaxAmount',
                     '$price', // 'Price',
-                    '${price * (1 + taxRate)}', //'259.74', // 'TaxPrice',
+                    '${price * (one + taxRate)}', //'259.74', // 'TaxPrice',
                     '${quantity * price}', //'221778.00', // 'Amount',
                     '${price * taxRate * quantity}', //'37702.26', // 'Tax',
-                    '${price * (1 + taxRate) * quantity}', // '259480.26', // 'TaxAmount',
+                    '${price * (one + taxRate) * quantity}', // '259480.26', // 'TaxAmount',
                     '${quantity * price}', // '221778.00', // 'TotalAmount',
                     '$quantity', // 'AvailableQuantity',
                     '$quantity个', // 'AvailableCompositionQuantity',
@@ -250,6 +277,8 @@ class WarehouseEntries {
     };
 
     final response = await requester.fetch(url, params);
+
+    _logger.fine(response);
 
     if (response['value'] == null || response['value']['Data'] == null) {
       throw Error();
