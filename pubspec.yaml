@@ -1,6 +1,6 @@
 name: tplus_data
 description: Tplus Data Api.
-version: 0.2.2
+version: 0.3.0
 repository: https://github.com/hestia-io/tplus_data
 
 environment:
