@@ -2,6 +2,7 @@ import 'package:logging/logging.dart';
 import 'package:decimal/decimal.dart';
 
 import 'requester.dart';
+import 'errors.dart';
 
 final _logger = Logger('tplus.warehouseEntries');
 
@@ -286,7 +287,7 @@ class WarehouseEntries {
     _logger.fine(response);
 
     if (response['value'] == null || response['value']['Data'] == null) {
-      throw Error();
+      throw WarehouseEntryInsertError(message: response.toString());
     }
 
     final id = response['value']['Data']['ID'].toString();
@@ -354,7 +355,7 @@ class WarehouseEntries {
     final response = await auditRequester.fetch(url, params);
 
     if (response['value'] == null || response['value']['Data'] == null) {
-      throw Error();
+      throw WarehouseEntryAuditError(message: response.toString());
     }
   }
 }

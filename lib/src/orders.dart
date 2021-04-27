@@ -3,6 +3,7 @@ import 'package:uniform_data/uniform_data.dart';
 import 'package:decimal/decimal.dart';
 
 import 'requester.dart';
+import 'errors.dart';
 
 class Orders {
   Orders({
@@ -227,7 +228,7 @@ class Orders {
 
     if (results['value'] == null || results['value']['Data'] == null) {
       _logger.severe('update order error', results);
-      throw Error();
+      throw OrderInsertError(message: results.toString());
     }
 
     final id = results['value']['Data']['ID'].toString();
@@ -298,7 +299,7 @@ class Orders {
 
     if (results['value'] == null || results['value']['Data'] == null) {
       _logger.severe('audit order error', results);
-      throw Error();
+      throw OrderAuditError(message: results.toString());
     }
   }
 }

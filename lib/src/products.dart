@@ -3,6 +3,7 @@ import 'package:uniform_data/page_token.dart';
 import 'package:uniform_data/uniform_data.dart';
 
 import 'requester.dart';
+import 'errors.dart';
 
 class Products {
   Products({this.helper});
@@ -335,7 +336,7 @@ class Products {
       final id = data['ID'].toString();
       return product..id = id;
     } catch (e) {
-      throw Error();
+      throw ProductInsertError(message: results.toString());
     }
   }
 }

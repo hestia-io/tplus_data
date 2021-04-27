@@ -2,6 +2,7 @@ import 'package:logging/logging.dart';
 import 'package:uniform_data/uniform_data.dart';
 
 import 'requester.dart';
+import 'errors.dart';
 
 class Customers {
   Customers({this.helper});
@@ -125,7 +126,7 @@ class Customers {
     final results = await helper.fetch(url, params);
 
     if (results['value'] == null || results['value']['Data'] == null) {
-      throw Error();
+      throw CustomerInsertError(message: results.toString());
     }
 
     customer.id = results['value']['Data']['ID'].toString();
