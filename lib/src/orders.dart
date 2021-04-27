@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:uniform_data/uniform_data.dart';
+import 'package:decimal/decimal.dart';
 
 import 'requester.dart';
 
@@ -172,6 +173,10 @@ class Orders {
                 'rows': order.snippet.lineItems
                     //.where((e) => e.quantityShipped > 0)
                     .map((item) {
+                  final cost =
+                      Decimal.parse(item.product.costOfGoodsSold.value);
+                  final quantity =
+                      Decimal.parse(item.quantityShipped.toString());
                   return [
                     1, // Status
                     '${order.snippet.lineItems.indexOf(item) + 1}', // Code
@@ -181,9 +186,7 @@ class Orders {
                     1, // IdUnit
                     '${item.quantityShipped}', // '33.00', // Quantity
                     item.product.costOfGoodsSold.value ?? '', // '656', // Price
-                    (item.quantityShipped *
-                            double.parse(item.product.costOfGoodsSold.value))
-                        .toString(), // '21648.00', // Amount
+                    '${quantity * cost}', // '21648.00', // Amount
                     '${item.product.taxRate / 100.0}', // '0.17', // TaxRate
                     '${item.quantityShipped}个', // CompositionQuantity
                     '1', // DiscountRate
@@ -223,6 +226,7 @@ class Orders {
     final results = await helper.fetch(url, params);
 
     if (results['value'] == null || results['value']['Data'] == null) {
+      _logger.severe('update order error', results);
       throw Error();
     }
 
@@ -293,6 +297,7 @@ class Orders {
     final results = await auditRequester.fetch(url, params);
 
     if (results['value'] == null || results['value']['Data'] == null) {
+      _logger.severe('audit order error', results);
       throw Error();
     }
   }

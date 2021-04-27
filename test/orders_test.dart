@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:uniform_data/uniform_data.dart';
+import 'package:decimal/decimal.dart';
 
 import 'package:tplus_data/src/orders.dart';
 import 'package:tplus_data/src/requester.dart';
@@ -191,6 +192,11 @@ void main() {
                 ],
                 'rows':
                     lineItems.where((e) => e.quantityShipped > 0).map((item) {
+                  final cost =
+                      Decimal.parse(item.product.costOfGoodsSold.value);
+                  final quantity =
+                      Decimal.parse(item.quantityShipped.toString());
+
                   return [
                     1, // Status
                     '${order.snippet.lineItems.indexOf(item) + 1}', // Code
@@ -200,9 +206,7 @@ void main() {
                     1, // IdUnit
                     '${item.quantityShipped}', // '33.00', // Quantity
                     item.product.costOfGoodsSold.value ?? '', // '656', // Price
-                    (item.quantityShipped *
-                            double.parse(item.product.costOfGoodsSold.value))
-                        .toString(), // '21648.00', // Amount
+                    '${quantity * cost}', // '21648.00', // Amount
                     '${item.product.taxRate / 100.0}', // '0.17', // TaxRate
                     '${item.quantityShipped}个', // CompositionQuantity
                     '1', // DiscountRate
