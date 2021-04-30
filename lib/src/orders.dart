@@ -37,8 +37,10 @@ class Orders {
 
     var note = '';
     order.contentDetails.customAttributes.forEach((e) {
-      if (e.name == 'outboundDeliveryNote') {
-        note = e.value;
+      switch (e.name) {
+        case 'outboundDeliveryNote':
+          note = e.value;
+          break;
       }
     });
 
@@ -174,6 +176,26 @@ class Orders {
                 'rows': order.snippet.lineItems
                     //.where((e) => e.quantityShipped > 0)
                     .map((item) {
+                  var unitId = '';
+                  var unitName = '';
+
+                  item.product.customAttributes.forEach((e) {
+                    switch (e.name) {
+                      case 'unitId':
+                        unitId = e.value;
+                        break;
+                      case 'unitName':
+                        unitName = e.value;
+                        break;
+                    }
+                  });
+
+                  if (unitId.isEmpty || unitName.isEmpty) {
+                    throw OrderInsertError(
+                        message: 'Invalid product unit '
+                            'unitId: $unitId, unitName: $unitName');
+                  }
+
                   final cost =
                       Decimal.parse(item.product.costOfGoodsSold.value);
                   final quantity =
@@ -184,12 +206,12 @@ class Orders {
                     int.parse(item.shippingDetails.warehouseId ??
                         '0'), // 3, // IdWarehouse
                     int.parse(item.product.id), // 10, // IdInventory
-                    1, // IdUnit
+                    unitId, //1, // IdUnit
                     '${item.quantityShipped}', // '33.00', // Quantity
                     item.product.costOfGoodsSold.value ?? '', // '656', // Price
                     '${quantity * cost}', // '21648.00', // Amount
                     '${item.product.taxRate / 100.0}', // '0.17', // TaxRate
-                    '${item.quantityShipped}个', // CompositionQuantity
+                    '${item.quantityShipped}$unitName', // CompositionQuantity
                     '1', // DiscountRate
                     '', // AvailableQuantity
                     '', // AvailableCompositionQuantity

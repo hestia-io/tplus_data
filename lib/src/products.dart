@@ -81,6 +81,8 @@ class Products {
     final fields = table[0].map((e) => e.first).toList();
     final idIndex = fields.indexOf('ID');
     final nameIndex = fields.indexOf('Name');
+    final unitNameIndex = fields.indexOf('Unit_Name');
+    final unitIdIndex = fields.indexOf('UnitID');
 
     final products = table[1].map<Product>((item) {
       final product = Product()
@@ -125,6 +127,17 @@ class Products {
             product.contentDetails.customAttributes.add(customAttribute);
           });
         });
+
+        final unitName = item[unitNameIndex];
+        final unitId = item[unitIdIndex];
+
+        product.contentDetails.customAttributes.add(CustomAttribute()
+          ..name = 'unitId'
+          ..value = '$unitId');
+
+        product.contentDetails.customAttributes.add(CustomAttribute()
+          ..name = 'unitName'
+          ..value = '$unitName');
       }
 
       return product;

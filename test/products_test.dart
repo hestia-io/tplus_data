@@ -162,6 +162,12 @@ void main() {
     expect(response.items[0].contentDetails.customAttributes[4].name,
         'priuserdefnvc5');
     expect(response.items[0].contentDetails.customAttributes[4].value, '');
+    expect(
+        response.items[0].contentDetails.customAttributes[24].name, 'unitId');
+    expect(response.items[0].contentDetails.customAttributes[24].value, '1');
+    expect(
+        response.items[0].contentDetails.customAttributes[25].name, 'unitName');
+    expect(response.items[0].contentDetails.customAttributes[25].value, '个');
     expect(response.items[0].snippet.costOfGoodsSold.value, '656');
     expect(response.items[0].snippet.costOfGoodsSold.currency, 'RMB');
 
