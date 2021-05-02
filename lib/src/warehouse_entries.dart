@@ -164,7 +164,7 @@ class WarehouseEntries {
               'IdAccountState': '338',
               'AccountState': {'Id': '338', 'Code': 'NoAccount', 'Name': '未核算'},
               // 单据日期
-              'VoucherDate': entry.date ?? '',
+              'VoucherDate': (entry.date ?? '').split(' ').first,
               //
               'Code': '', //'II-2021-03-0002',
               'IdBusiType': 1,

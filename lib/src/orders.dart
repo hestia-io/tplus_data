@@ -99,8 +99,9 @@ class Orders {
               'VoucherState': {'Id': '181', 'Code': '00', 'Name': '未审'},
               'IdDeliveryState': '302',
               'DeliveryState': {'Id': '302', 'Code': '00', 'Name': '未销货'},
-              'VoucherDate':
-                  DateTime.now().toString().split(' ').first, // '2021-03-29',
+              'VoucherDate': order.snippet.hasPlacedDate()
+                  ? order.snippet.placedDate.split('T').first
+                  : DateTime.now().toString().split(' ').first, // '2021-03-29',
               'Code': '', // 'IO-2021-03-0001',
               'IdBusiType':
                   order.status.orderStatus == OrderOrderStatus.returned

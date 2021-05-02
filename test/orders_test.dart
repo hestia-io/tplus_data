@@ -34,7 +34,15 @@ void main() {
           ..costOfGoodsSold = (Price()
             ..currency = 'RMB'
             ..value = '120')
-          ..taxRate = 13)
+          ..taxRate = 13
+          ..customAttributes.addAll([
+            CustomAttribute()
+              ..name = 'unitId'
+              ..value = '1',
+            CustomAttribute()
+              ..name = 'unitName'
+              ..value = '个'
+          ]))
         ..quantityShipped = 123
         ..shippingDetails =
             (OrderLineItemShippingDetails()..warehouseId = testWarehouseId)
@@ -42,12 +50,15 @@ void main() {
 
     final order = Order()
       ..snippet = (OrderSnippet()
+        ..placedDate = '2020-10-01T12:20:31Z'
         ..customerId = testCustomerId
         ..lineItems.addAll(lineItems))
       ..contentDetails = (OrderContentDetails()
-        ..customAttributes.add(CustomAttribute()
-          ..name = 'outboundDeliveryNote'
-          ..value = testNote))
+        ..customAttributes.addAll([
+          CustomAttribute()
+            ..name = 'outboundDeliveryNote'
+            ..value = testNote,
+        ]))
       ..status = (OrderStatus()..orderStatus = OrderOrderStatus.shipped);
 
     final url = Uri.parse('${requester.url}${Orders.updateUrl}');
@@ -121,8 +132,7 @@ void main() {
               'VoucherState': {'Id': '181', 'Code': '00', 'Name': '未审'},
               'IdDeliveryState': '302',
               'DeliveryState': {'Id': '302', 'Code': '00', 'Name': '未销货'},
-              'VoucherDate':
-                  DateTime.now().toString().split(' ').first, // '2021-03-29',
+              'VoucherDate': '2020-10-01',
               'Code': '', // 'IO-2021-03-0001',
               'IdBusiType': 65,
               'IdRdStyle': 17,
@@ -203,7 +213,7 @@ void main() {
                     int.parse(item.shippingDetails.warehouseId ??
                         '0'), // 3, // IdWarehouse
                     int.parse(item.product.id), // 10, // IdInventory
-                    1, // IdUnit
+                    '1', // IdUnit
                     '${item.quantityShipped}', // '33.00', // Quantity
                     item.product.costOfGoodsSold.value ?? '', // '656', // Price
                     '${quantity * cost}', // '21648.00', // Amount
