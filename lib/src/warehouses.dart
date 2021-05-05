@@ -78,6 +78,7 @@ class Warehouses {
     final fields = table[0].map((e) => e.first).toList();
     final idIndex = fields.indexOf('ID');
     final nameIndex = fields.indexOf('Name');
+    final codeIndex = fields.indexOf('Code');
 
     final warehouses = table[1].map<Warehouse>((item) {
       final warehouse = Warehouse()
@@ -85,8 +86,9 @@ class Warehouses {
         ..id = item[idIndex].toString();
 
       if (part.contains('snippet')) {
-        warehouse.snippet =
-            (WarehouseSnippet()..title = item[nameIndex].toString());
+        warehouse.snippet = (WarehouseSnippet()
+          ..title = item[nameIndex].toString()
+          ..description = (item[codeIndex] ?? '').toString());
       }
 
       if (part.contains('contentDetails')) {

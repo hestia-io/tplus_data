@@ -83,6 +83,7 @@ class Products {
     final nameIndex = fields.indexOf('Name');
     final unitNameIndex = fields.indexOf('Unit_Name');
     final unitIdIndex = fields.indexOf('UnitID');
+    final codeIndex = fields.indexOf('Code');
 
     final products = table[1].map<Product>((item) {
       final product = Product()
@@ -90,8 +91,9 @@ class Products {
         ..id = item[idIndex].toString();
 
       if (part.contains('snippet')) {
-        product.snippet =
-            (ProductSnippet()..title = item[nameIndex].toString());
+        product.snippet = (ProductSnippet()
+          ..title = item[nameIndex].toString()
+          ..code = (item[codeIndex] ?? '').toString());
 
         final costIndex = fields.indexOf('LatestCost');
         if (costIndex > -1) {
