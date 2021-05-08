@@ -233,10 +233,12 @@ class WarehouseEntries {
                 'rows': entry.items.map((item) {
                   final productId = item.productId;
                   final quantity = Decimal.parse(item.quantity.toString());
-                  final price = Decimal.parse(item.price.toStringAsFixed(2));
+                  final taxPrice = Decimal.parse(item.price.toStringAsFixed(2));
                   final taxRate =
                       Decimal.parse(item.taxRate.toStringAsFixed(2));
                   final one = Decimal.parse('1.0');
+
+                  final price = taxPrice / (one + taxRate);
 
                   return [
                     1, // 'Status',
@@ -253,14 +255,14 @@ class WarehouseEntries {
                     '', // 'ExistingCompositionQuantity',
                     '$quantity个', // 'CompositionQuantity',
                     '$taxRate', // 'TaxRate',
-                    '${(price * (one + taxRate))}', //'259.74', // 'OrigTaxPrice',
+                    '$taxPrice', //'259.74', // 'OrigTaxPrice',
                     '${(price * taxRate * quantity)}', //'37702.26', // 'OrigTax',
-                    '${(price * (one + taxRate) * quantity)}', //'259480.26', // 'OrigTaxAmount',
+                    '${taxPrice * quantity}', //'259480.26', // 'OrigTaxAmount',
                     '$price', // 'Price',
-                    '${(price * (one + taxRate))}', //'259.74', // 'TaxPrice',
+                    '$taxPrice', //'259.74', // 'TaxPrice',
                     '${(quantity * price)}', //'221778.00', // 'Amount',
                     '${(price * taxRate * quantity)}', //'37702.26', // 'Tax',
-                    '${(price * (one + taxRate) * quantity)}', // '259480.26', // 'TaxAmount',
+                    '${taxPrice * quantity}', // '259480.26', // 'TaxAmount',
                     '${(quantity * price)}', // '221778.00', // 'TotalAmount',
                     '$quantity', // 'AvailableQuantity',
                     '$quantity个', // 'AvailableCompositionQuantity',
