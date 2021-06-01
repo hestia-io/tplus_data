@@ -53,6 +53,8 @@ class WarehouseEntryItem {
     this.quantity,
     this.taxRate,
     this.warehouseId,
+    this.unitId,
+    this.unitName,
   });
 
   final String warehouseId;
@@ -64,6 +66,10 @@ class WarehouseEntryItem {
   final int quantity;
 
   final double taxRate;
+
+  final String unitId;
+
+  final String unitName;
 
   Map toJson() => {
         if (productId != null) 'productId': productId,
@@ -240,6 +246,9 @@ class WarehouseEntries {
 
                   final price = taxPrice / (one + taxRate);
 
+                  var unitId = item.unitId;
+                  var unitName = item.unitName;
+
                   return [
                     1, // 'Status',
                     '${entry.items.indexOf(item) + 1}', // '0000', // 'Code',
@@ -247,13 +256,13 @@ class WarehouseEntries {
                     productId, // 'IdInventory',
                     // 单位ID
                     // @TODO: 需要确认正式环境ID
-                    1, // 'IdUnit',
+                    unitId, // 'IdUnit',
                     '$quantity', // 'Quantity',
                     '$price', // 'OrigPrice',
                     '${(quantity * price)}', //'221778.00', // 'OrigAmount',
                     '', // '0', // 'ExistingQuantity',
                     '', // 'ExistingCompositionQuantity',
-                    '$quantity个', // 'CompositionQuantity',
+                    '$quantity$unitName', // 'CompositionQuantity',
                     '$taxRate', // 'TaxRate',
                     '$taxPrice', //'259.74', // 'OrigTaxPrice',
                     '${(price * taxRate * quantity)}', //'37702.26', // 'OrigTax',
@@ -265,7 +274,7 @@ class WarehouseEntries {
                     '${taxPrice * quantity}', // '259480.26', // 'TaxAmount',
                     '${(quantity * price)}', // '221778.00', // 'TotalAmount',
                     '$quantity', // 'AvailableQuantity',
-                    '$quantity个', // 'AvailableCompositionQuantity',
+                    '$quantity$unitName', // 'AvailableCompositionQuantity',
                     'false', // 'TaxFlag',
                     '' // 'LastModifiedField'
                   ];
